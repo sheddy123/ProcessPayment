@@ -11,6 +11,7 @@ namespace P_payment.Repository.IRepository
         bool CreatePayment(PaymentModel paymentModel);
         bool UpdatePayment(PaymentModel paymentModel);
         bool DeletePayment(PaymentModel paymentModel);
+        Task<string> PostMessage(PaymentModel postData, string clientType);
         bool Save();
     }
 }

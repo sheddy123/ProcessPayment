@@ -39,26 +39,7 @@ namespace P_payment.Controllers
             _clientFactory = clientFactory;
         }
 
-        public async Task<string> PostMessage(PaymentModel postData, string clientType)
-        {
-            var httpClient = _clientFactory.CreateClient(clientType);
-            var url = $"https://localhost:44391/api/ProPayment/ProcessPayment";
-
-            using (var content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json"))
-            {
-                var result = await httpClient.PostAsync(url, content);
-                // The call was a success
-                if (result.StatusCode == HttpStatusCode.Accepted)
-                {
-                    return "OK";
-                }
-                // The call was not a success, do something
-                else
-                {
-                    return "Error";
-                }
-            }
-        }
+        
 
         #region End Point to Process Payment
         /// <summary>
@@ -66,20 +47,20 @@ namespace P_payment.Controllers
         /// </summary>
         /// <param name="paymentModel"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(PaymentModel))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("ProcessPayment")]
-        public async Task<IActionResult> ProcessPayment(PaymentModel paymentModel)
+        public async Task<IActionResult> ProcessPayment(PaymentModelDto paymentModelDto)
         {
-            if (paymentModel == null)
+            if (paymentModelDto == null)
                 return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            
+            var paymentModel = _mapper.Map<PaymentModel>(paymentModelDto);
             try
             {
                 //If the amount to be paid is less than £20, use ICheapPaymentGateway
@@ -90,7 +71,7 @@ namespace P_payment.Controllers
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");
                         return StatusCode(500, ModelState);
                     }
-                    return Ok(paymentModel.PaymentState);
+                    return StatusCode(200, paymentModel.PaymentState);
                 }
 
                 //If the amount to be paid is £21-500, use IExpensivePaymentGateway if available
@@ -99,30 +80,30 @@ namespace P_payment.Controllers
                     if (!_expensivePaymentGateway.CreatePayment(paymentModel))
                     {
                         paymentModel.PaymentState = "pending";
-                        var response = await PostMessage(paymentModel, "ExpensivePayment");
+                        var response = await _expensivePaymentGateway.PostMessage(paymentModel, "ExpensivePayment");
                         if (response.Equals("OK"))
                         {
                             paymentModel.PaymentState = "Processed";
-                            return Ok(paymentModel.PaymentState);
+                            return StatusCode(200, paymentModel.PaymentState);
                         }
                         paymentModel.PaymentState = "failed";
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");
                         return StatusCode(500, ModelState);
                     }
-                    return Ok();
+                    return StatusCode(200, paymentModel.PaymentState);
                 }
 
                 //If the amount is > £500, try only PremiumPaymentService and retry up to 3 times in case paymentdoes not get processed
                 if (paymentModel.Amount > 500)
                 {
-                    if (!_expensivePaymentGateway.CreatePayment(paymentModel))
+                    if (!_premiumPaymentService.CreatePayment(paymentModel))
                     {
                         paymentModel.PaymentState = "pending";
-                        var response = await PostMessage(paymentModel, "HttpClient");
+                        var response = await _premiumPaymentService.PostMessage(paymentModel, "ExpensivePayment");
                         if (response.Equals("OK"))
                         {
                             paymentModel.PaymentState = "Processed";
-                            return Ok(paymentModel.PaymentState);
+                            return StatusCode(200, paymentModel.PaymentState);
                         }
                         paymentModel.PaymentState = "failed";
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");

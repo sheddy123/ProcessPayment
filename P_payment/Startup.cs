@@ -19,6 +19,8 @@ using AutoMapper;
 using Polly.Extensions.Http;
 using Polly;
 using System.Net.Http;
+using System.Reflection;
+using System.IO;
 
 namespace P_payment
 {
@@ -45,6 +47,24 @@ namespace P_payment
             services.AddHttpClient("HttpClient").SetHandlerLifetime(TimeSpan.FromMinutes(5)).AddPolicyHandler(GetRetryPolicy());
             services.AddHttpClient("ExpensivePayment").SetHandlerLifetime(TimeSpan.FromMinutes(5)).AddPolicyHandler(GetPolicy());
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("ProcessPayment",
+                    new Microsoft.OpenApi.Models.OpenApiInfo()
+                    {
+                        Title = "ProcessPayment Api",
+                        Version = "1",
+                        Description = "Web Api for Processing Payment",
+                        Contact = new Microsoft.OpenApi.Models.OpenApiContact()
+                        {
+                            Email = "Ifeanyishadrach452@gmail.com",
+                            Name = "Ifeanyi Shadrach"
+                        }
+                    });
+                var xmlCommentFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var cmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentFile);
+                options.IncludeXmlComments(cmlCommentsFullPath);
+            });
 
         }
         private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
@@ -81,7 +101,12 @@ namespace P_payment
             }
 
             app.UseHttpsRedirection();
-
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/ProcessPayment/swagger.json", "ProcessPayment API");
+                options.RoutePrefix = "";
+            });
             app.UseRouting();
 
             app.UseAuthorization();

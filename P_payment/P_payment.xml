@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>P_payment</name>
+    </assembly>
+    <members>
+        <member name="M:P_payment.Controllers.ProPaymentController.ProcessPayment(P_payment.Models.Dtos.PaymentModelDto)">
+            <summary>
+            End point to Process Payment
+            </summary>
+            <param name="paymentModel"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
