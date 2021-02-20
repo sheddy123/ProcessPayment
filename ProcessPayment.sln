@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P_payment", "P_payment\P_payment.csproj", "{3210F6D8-7BB0-401C-97ED-8654F9BAE950}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P_payment", "P_payment\P_payment.csproj", "{3210F6D8-7BB0-401C-97ED-8654F9BAE950}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProPayTest", "ProPayTest\ProPayTest.csproj", "{82F32AC3-9336-4317-B89F-DE3EAAD36041}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3210F6D8-7BB0-401C-97ED-8654F9BAE950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3210F6D8-7BB0-401C-97ED-8654F9BAE950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3210F6D8-7BB0-401C-97ED-8654F9BAE950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F32AC3-9336-4317-B89F-DE3EAAD36041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F32AC3-9336-4317-B89F-DE3EAAD36041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F32AC3-9336-4317-B89F-DE3EAAD36041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F32AC3-9336-4317-B89F-DE3EAAD36041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

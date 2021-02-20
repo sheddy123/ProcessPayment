@@ -52,15 +52,15 @@ namespace P_payment.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost("ProcessPayment")]
-        public async Task<IActionResult> ProcessPayment(PaymentModelDto paymentModelDto)
+        public async Task<IActionResult> ProcessPayment(PaymentModel paymentModel)
         {
-            if (paymentModelDto == null)
+            if (paymentModel == null)
                 return BadRequest(ModelState);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var paymentModel = _mapper.Map<PaymentModel>(paymentModelDto);
+            //var paymentModel = _mapper.Map<PaymentModel>(paymentModelDto);
             try
             {
                 //If the amount to be paid is less than £20, use ICheapPaymentGateway
@@ -71,7 +71,7 @@ namespace P_payment.Controllers
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");
                         return StatusCode(500, ModelState);
                     }
-                    return StatusCode(200, paymentModel.PaymentState);
+                    return StatusCode(200);
                 }
 
                 //If the amount to be paid is £21-500, use IExpensivePaymentGateway if available
@@ -84,13 +84,13 @@ namespace P_payment.Controllers
                         if (response.Equals("OK"))
                         {
                             paymentModel.PaymentState = "Processed";
-                            return StatusCode(200, paymentModel.PaymentState);
+                            return StatusCode(200);
                         }
                         paymentModel.PaymentState = "failed";
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");
                         return StatusCode(500, ModelState);
                     }
-                    return StatusCode(200, paymentModel.PaymentState);
+                    return StatusCode(200);
                 }
 
                 //If the amount is > £500, try only PremiumPaymentService and retry up to 3 times in case paymentdoes not get processed
@@ -103,7 +103,7 @@ namespace P_payment.Controllers
                         if (response.Equals("OK"))
                         {
                             paymentModel.PaymentState = "Processed";
-                            return StatusCode(200, paymentModel.PaymentState);
+                            return StatusCode(200);
                         }
                         paymentModel.PaymentState = "failed";
                         ModelState.AddModelError("", $"Could not process payment for cardholder {paymentModel.CardHolder} please try again..");
