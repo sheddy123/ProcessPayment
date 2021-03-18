@@ -7,5 +7,5 @@ A WebAPI with only 1 method called “ProcessPayment” that receives a request 
  CardHolder
  ExpirationDate
  SecurityCode 
- Amount
-Also included in the project is a unit test for processing payment
+ Amount.
+Also included in the project is a unit test for processing payment.
